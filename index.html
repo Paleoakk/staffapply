@@ -1,1 +1,784 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PaleOak's Hometown Staff Application</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Font: gg sans / Inter fallback -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        discord: {
+                            bg: '#1e1f22',
+                            card: '#313338',
+                            innerCard: '#2b2d31',
+                            input: '#1e1f22',
+                            inputFocus: '#383a40',
+                            blurple: '#5865f2',
+                            blurpleHover: '#4752c4',
+                            green: '#23a55a',
+                            greenHover: '#1d8a4b',
+                            text: '#dbdee1',
+                            muted: '#949ba4',
+                            heading: '#f2f3f5'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #1e1f22;
+            color: #dbdee1;
+            font-family: 'Inter', sans-serif;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(88, 101, 242, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(35, 165, 90, 0.1) 0px, transparent 50%);
+            background-attachment: fixed;
+        }
 
+        /* Custom scrollbar for dark theme */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #2b2d31;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1a1b1e;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #111214;
+        }
+
+        /* Form transition animations */
+        .step-transition {
+            transition: all 0.3s ease-in-out;
+        }
+
+        .radio-custom:checked + label {
+            border-color: #5865f2;
+            background-color: rgba(88, 101, 242, 0.15);
+        }
+
+        .radio-custom:checked + label .dot-inner {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* Floating glass effect card */
+        .discord-card-shadow {
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between p-4 md:p-8 select-none">
+
+    <!-- Top Header Banner -->
+    <header class="w-full max-w-4xl mx-auto mb-6 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full bg-discord-blurple flex items-center justify-center text-white shadow-lg">
+                <i class="fa-brands fa-discord text-2xl"></i>
+            </div>
+            <div>
+                <h1 class="text-xl md:text-2xl font-extrabold text-discord-heading tracking-tight">PaleOak's Hometown</h1>
+                <p class="text-xs text-discord-muted font-medium">Official Staff Recruitment Portal</p>
+            </div>
+        </div>
+        <div class="hidden sm:flex items-center gap-2 bg-discord-card px-3 py-1.5 rounded-full text-xs font-semibold text-discord-muted border border-white/5">
+            <span class="w-2.5 h-2.5 rounded-full bg-discord-green inline-block animate-pulse"></span>
+            Applications Open
+        </div>
+    </header>
+
+    <!-- Main Application Card Container -->
+    <main class="w-full max-w-4xl mx-auto my-auto">
+        <div class="bg-discord-card rounded-2xl discord-card-shadow border border-white/5 overflow-hidden flex flex-col min-h-[560px] relative">
+            
+            <!-- Card Header Banner -->
+            <div class="bg-gradient-to-r from-[#2b2d31] via-[#313338] to-[#2b2d31] p-6 md:p-8 border-b border-white/5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div class="flex items-center gap-4">
+                    <div class="p-3 bg-discord-blurple/20 text-discord-blurple rounded-xl border border-discord-blurple/30">
+                        <i class="fa-solid fa-clipboard-user text-3xl"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-2xl md:text-3xl font-black text-discord-heading tracking-tight flex items-center gap-2">
+                            Staff Application
+                        </h2>
+                        <p class="text-sm text-discord-muted mt-0.5">Please answer all questions thoroughly and truthfully.</p>
+                    </div>
+                </div>
+
+                <!-- Progress Bar Pill -->
+                <div class="w-full sm:w-48 bg-discord-bg rounded-full h-3.5 p-0.5 border border-white/5 overflow-hidden">
+                    <div id="progressBar" class="bg-gradient-to-r from-discord-blurple to-indigo-400 h-full rounded-full transition-all duration-300 ease-out" style="width: 9.09%;"></div>
+                </div>
+            </div>
+
+            <!-- Form Content Area -->
+            <form id="appForm" onsubmit="return false;" class="p-6 md:p-10 flex-1 flex flex-col justify-between">
+                
+                <!-- Dynamic Pages Container -->
+                <div id="pagesContainer" class="flex-1 flex flex-col justify-center">
+
+                    <!-- PAGE 1: Personal Info -->
+                    <div class="page-step space-y-6" data-page="1">
+                        <div class="border-b border-white/5 pb-3">
+                            <h3 class="text-lg font-bold text-discord-heading flex items-center gap-2">
+                                <i class="fa-solid fa-user-gear text-discord-blurple"></i> Personal Identification
+                            </h3>
+                            <p class="text-xs text-discord-muted">Basic contact and timezone information.</p>
+                        </div>
+
+                        <!-- Combined Prompt Question -->
+                        <div class="bg-discord-innerCard p-4 rounded-xl border border-white/5 mb-4">
+                            <label class="block text-sm font-semibold text-discord-heading mb-1">
+                                Discord Username, Age, and Current Timezone <span class="text-red-400">*</span>
+                            </label>
+                            <p class="text-xs text-discord-muted mb-2">Example format: <span class="font-mono text-discord-blurple bg-discord-bg px-1.5 py-0.5 rounded">itzproxel/16/GMT +5:30</span> (Google if you are not sure)</p>
+                            <input type="text" id="q_disc_age_tz" class="w-full bg-discord-input text-discord-heading placeholder-discord-muted/50 rounded-lg px-4 py-3 border border-transparent focus:border-discord-blurple focus:bg-discord-inputFocus outline-none transition" placeholder="Username / Age / Timezone">
+                        </div>
+
+                        <!-- Email Input -->
+                        <div class="bg-discord-innerCard p-4 rounded-xl border border-white/5">
+                            <label class="block text-sm font-semibold text-discord-heading mb-1">
+                                Email Address <span class="text-red-400">*</span>
+                            </label>
+                            <p class="text-xs text-discord-muted mb-2">Used for important notifications or follow-ups.</p>
+                            <input type="email" id="q_email" class="w-full bg-discord-input text-discord-heading placeholder-discord-muted/50 rounded-lg px-4 py-3 border border-transparent focus:border-discord-blurple focus:bg-discord-inputFocus outline-none transition" placeholder="example@example.com">
+                        </div>
+                    </div>
+
+                    <!-- PAGE 2: Microphone & Recording -->
+                    <div class="page-step hidden space-y-6" data-page="2">
+                        <div class="border-b border-white/5 pb-3">
+                            <h3 class="text-lg font-bold text-discord-heading flex items-center gap-2">
+                                <i class="fa-solid fa-microphone text-discord-blurple"></i> Audio & Video Verification
+                            </h3>
+                        </div>
+                        <div class="bg-discord-innerCard p-6 rounded-xl border border-white/5 space-y-4">
+                            <label class="block text-base font-medium text-discord-heading">
+                                Do you have a working microphone and the ability to record video/audio evidence? <span class="text-red-400">*</span>
+                            </label>
+                            <div class="space-y-3 pt-2">
+                                <label class="flex items-center gap-3 p-3.5 bg-discord-input rounded-xl border border-white/5 cursor-pointer hover:border-discord-blurple/50 transition">
+                                    <input type="radio" name="q_mic" value="Yes, I have both a working mic and recording capabilities." class="w-4 h-4 text-discord-blurple focus:ring-0 accent-discord-blurple">
+                                    <span class="text-sm font-medium text-discord-heading">Yes, I have both a working microphone and recording capabilities</span>
+                                </label>
+                                <label class="flex items-center gap-3 p-3.5 bg-discord-input rounded-xl border border-white/5 cursor-pointer hover:border-discord-blurple/50 transition">
+                                    <input type="radio" name="q_mic" value="I have a mic only (cannot record video)." class="w-4 h-4 text-discord-blurple focus:ring-0 accent-discord-blurple">
+                                    <span class="text-sm font-medium text-discord-heading">I have a mic only (cannot record video evidence)</span>
+                                </label>
+                                <label class="flex items-center gap-3 p-3.5 bg-discord-input rounded-xl border border-white/5 cursor-pointer hover:border-discord-blurple/50 transition">
+                                    <input type="radio" name="q_mic" value="I can record video/audio, but do not speak on mic." class="w-4 h-4 text-discord-blurple focus:ring-0 accent-discord-blurple">
+                                    <span class="text-sm font-medium text-discord-heading">I can record video/audio, but do not speak on microphone</span>
+                                </label>
+                                <label class="flex items-center gap-3 p-3.5 bg-discord-input rounded-xl border border-white/5 cursor-pointer hover:border-discord-blurple/50 transition">
+                                    <input type="radio" name="q_mic" value="No, I do not have a working mic or recording setup." class="w-4 h-4 text-discord-blurple focus:ring-0 accent-discord-blurple">
+                                    <span class="text-sm font-medium text-discord-heading">No, I do not have a working microphone or recording software</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- PAGE 3: Time Commitment -->
+                    <div class="page-step hidden space-y-6" data-page="3">
+                        <div class="border-b border-white/5 pb-3">
+                            <h3 class="text-lg font-bold text-discord-heading flex items-center gap-2">
+                                <i class="fa-solid fa-clock text-discord-blurple"></i> Activity & Availability
+                            </h3>
+                        </div>
+                        <div class="bg-discord-innerCard p-6 rounded-xl border border-white/5 space-y-3">
+                            <label class="block text-base font-medium text-discord-heading">
+                                How many hours a week can you dedicate to checking chat and helping out? <span class="text-red-400">*</span>
+                            </label>
+                            <p class="text-xs text-discord-muted">Be realistic with your commitment. Quality of moderation matters.</p>
+                            <input type="text" id="q_hours" class="w-full bg-discord-input text-discord-heading placeholder-discord-muted/50 rounded-lg px-4 py-3 border border-transparent focus:border-discord-blurple focus:bg-discord-inputFocus outline-none transition" placeholder="e.g. 15-20 hours per week (around 2-3 hours daily)">
+                        </div>
+                    </div>
+
+                    <!-- PAGE 4: Motivation -->
+                    <div class="page-step hidden space-y-6" data-page="4">
+                        <div class="border-b border-white/5 pb-3">
+                            <h3 class="text-lg font-bold text-discord-heading flex items-center gap-2">
+                                <i class="fa-solid fa-heart text-discord-blurple"></i> Motivation & Goals
+                            </h3>
+                        </div>
+                        <div class="bg-discord-innerCard p-6 rounded-xl border border-white/5 space-y-3">
+                            <label class="block text-base font-medium text-discord-heading">
+                                Why do you want to be a part of the staff team on this server? <span class="text-red-400">*</span>
+                            </label>
+                            <p class="text-xs text-discord-muted">Provide a detailed explanation of your motivation and goals for PaleOak's Hometown.</p>
+                            <textarea id="q_motivation" rows="5" class="w-full bg-discord-input text-discord-heading placeholder-discord-muted/50 rounded-lg p-4 border border-transparent focus:border-discord-blurple focus:bg-discord-inputFocus outline-none transition resize-none" placeholder="Write your detailed answer here..."></textarea>
+                        </div>
+                    </div>
+
+                    <!-- PAGE 5: Previous Experience -->
+                    <div class="page-step hidden space-y-6" data-page="5">
+                        <div class="border-b border-white/5 pb-3">
+                            <h3 class="text-lg font-bold text-discord-heading flex items-center gap-2">
+                                <i class="fa-solid fa-briefcase text-discord-blurple"></i> Staff Experience
+                            </h3>
+                        </div>
+                        <div class="bg-discord-innerCard p-6 rounded-xl border border-white/5 space-y-3">
+                            <label class="block text-base font-medium text-discord-heading">
+                                Have you ever been staff on another server? If yes, what did you do there? If no, what makes you ready for this role? <span class="text-red-400">*</span>
+                            </label>
+                            <p class="text-xs text-discord-muted">Include server sizes, positions held, or personal traits that qualify you.</p>
+                            <textarea id="q_experience" rows="5" class="w-full bg-discord-input text-discord-heading placeholder-discord-muted/50 rounded-lg p-4 border border-transparent focus:border-discord-blurple focus:bg-discord-inputFocus outline-none transition resize-none" placeholder="Share your past experience or why you are ready for your first staff role..."></textarea>
+                        </div>
+                    </div>
+
+                    <!-- PAGE 6: Scenario 1 - Minor Rules -->
+                    <div class="page-step hidden space-y-6" data-page="6">
+                        <div class="border-b border-white/5 pb-3">
+                            <h3 class="text-lg font-bold text-discord-heading flex items-center gap-2">
+                                <i class="fa-solid fa-shield-halved text-discord-blurple"></i> Scenario 1: Minor Infractions
+                            </h3>
+                        </div>
+                        <div class="bg-discord-innerCard p-6 rounded-xl border border-white/5 space-y-3">
+                            <label class="block text-base font-medium text-discord-heading leading-relaxed">
+                                How would you handle a situation where a member is breaking a minor rule (like slightly formatting text wrong or posting in the wrong channel) after being warned once? <span class="text-red-400">*</span>
+                            </label>
+                            <textarea id="q_scenario1" rows="5" class="w-full bg-discord-input text-discord-heading placeholder-discord-muted/50 rounded-lg p-4 border border-transparent focus:border-discord-blurple focus:bg-discord-inputFocus outline-none transition resize-none" placeholder="Explain your moderation process step-by-step..."></textarea>
+                        </div>
+                    </div>
+
+                    <!-- PAGE 7: Scenario 2 - Aggressive Member -->
+                    <div class="page-step hidden space-y-6" data-page="7">
+                        <div class="border-b border-white/5 pb-3">
+                            <h3 class="text-lg font-bold text-discord-heading flex items-center gap-2">
+                                <i class="fa-solid fa-comments text-discord-blurple"></i> Scenario 2: Public Conflict
+                            </h3>
+                        </div>
+                        <div class="bg-discord-innerCard p-6 rounded-xl border border-white/5 space-y-3">
+                            <label class="block text-base font-medium text-discord-heading leading-relaxed">
+                                If a member starts aggressively arguing with you in public chat about a warning you gave them, how do you handle it? <span class="text-red-400">*</span>
+                            </label>
+                            <textarea id="q_scenario2" rows="5" class="w-full bg-discord-input text-discord-heading placeholder-discord-muted/50 rounded-lg p-4 border border-transparent focus:border-discord-blurple focus:bg-discord-inputFocus outline-none transition resize-none" placeholder="Describe how you maintain professionalism and de-escalate..."></textarea>
+                        </div>
+                    </div>
+
+                    <!-- PAGE 8: Scenario 3 - Emergency Raid -->
+                    <div class="page-step hidden space-y-6" data-page="8">
+                        <div class="border-b border-white/5 pb-3">
+                            <h3 class="text-lg font-bold text-discord-heading flex items-center gap-2">
+                                <i class="fa-solid fa-triangle-exclamation text-discord-blurple"></i> Scenario 3: Emergency Crisis
+                            </h3>
+                        </div>
+                        <div class="bg-discord-innerCard p-6 rounded-xl border border-white/5 space-y-3">
+                            <label class="block text-base font-medium text-discord-heading leading-relaxed">
+                                A user is raiding or spamming explicit content in chat, but your bot commands aren't working, and no higher-ups are online. What is your exact backup plan to stop the chaos? <span class="text-red-400">*</span>
+                            </label>
+                            <textarea id="q_scenario3" rows="5" class="w-full bg-discord-input text-discord-heading placeholder-discord-muted/50 rounded-lg p-4 border border-transparent focus:border-discord-blurple focus:bg-discord-inputFocus outline-none transition resize-none" placeholder="Outline your immediate manual actions and backup procedures..."></textarea>
+                        </div>
+                    </div>
+
+                    <!-- PAGE 9: Scenario 4 - Member Drama -->
+                    <div class="page-step hidden space-y-6" data-page="9">
+                        <div class="border-b border-white/5 pb-3">
+                            <h3 class="text-lg font-bold text-discord-heading flex items-center gap-2">
+                                <i class="fa-solid fa-users-slash text-discord-blurple"></i> Scenario 4: High-Profile Drama
+                            </h3>
+                        </div>
+                        <div class="bg-discord-innerCard p-6 rounded-xl border border-white/5 space-y-3">
+                            <label class="block text-base font-medium text-discord-heading leading-relaxed">
+                                Two active, well-known members are having a massive, toxic drama argument in public chat, blaming each other. There is no clear evidence of who started it. How do you resolve this without making the community angry? <span class="text-red-400">*</span>
+                            </label>
+                            <textarea id="q_scenario4" rows="5" class="w-full bg-discord-input text-discord-heading placeholder-discord-muted/50 rounded-lg p-4 border border-transparent focus:border-discord-blurple focus:bg-discord-inputFocus outline-none transition resize-none" placeholder="Explain how you stay neutral and resolve high-tension disputes..."></textarea>
+                        </div>
+                    </div>
+
+                    <!-- PAGE 10: Scenario 5 - Handling Mistakes -->
+                    <div class="page-step hidden space-y-6" data-page="10">
+                        <div class="border-b border-white/5 pb-3">
+                            <h3 class="text-lg font-bold text-discord-heading flex items-center gap-2">
+                                <i class="fa-solid fa-rotate-left text-discord-blurple"></i> Scenario 5: Accountability
+                            </h3>
+                        </div>
+                        <div class="bg-discord-innerCard p-6 rounded-xl border border-white/5 space-y-3">
+                            <label class="block text-base font-medium text-discord-heading leading-relaxed">
+                                Imagine you make a mistake and accidentally ban the wrong person. The community finds out and starts calling you a bad staff member in general chat. How do you manage the situation and regain their trust? <span class="text-red-400">*</span>
+                            </label>
+                            <textarea id="q_scenario5" rows="5" class="w-full bg-discord-input text-discord-heading placeholder-discord-muted/50 rounded-lg p-4 border border-transparent focus:border-discord-blurple focus:bg-discord-inputFocus outline-none transition resize-none" placeholder="Describe your response to public backlash and mistake correction..."></textarea>
+                        </div>
+                    </div>
+
+                    <!-- PAGE 11: Commitment Commitment & Submission -->
+                    <div class="page-step hidden space-y-6" data-page="11">
+                        <div class="border-b border-white/5 pb-3 text-center sm:text-left">
+                            <h3 class="text-lg font-bold text-discord-heading flex items-center justify-center sm:justify-start gap-2">
+                                <i class="fa-solid fa-handshake text-discord-blurple"></i> Final Trial Agreement
+                            </h3>
+                            <p class="text-xs text-discord-muted">Final step before submitting your application.</p>
+                        </div>
+
+                        <div class="bg-discord-innerCard p-6 rounded-xl border border-white/5 space-y-4">
+                            <div class="text-center sm:text-left">
+                                <label class="block text-lg font-bold text-discord-heading mb-1">
+                                    We’ll give you 2 weeks of time, so that you can prove yourself. <span class="text-red-400">*</span>
+                                </label>
+                                <p class="text-xs text-discord-muted">Are you prepared to accept the trial period requirements?</p>
+                            </div>
+
+                            <div class="space-y-3 pt-2">
+                                <label class="flex items-center gap-4 p-4 bg-discord-input rounded-xl border border-white/5 cursor-pointer hover:border-discord-blurple/50 transition">
+                                    <input type="radio" name="q_trial" value="Yes I will prove myself" class="w-5 h-5 text-discord-blurple focus:ring-0 accent-discord-blurple">
+                                    <div>
+                                        <span class="block text-base font-semibold text-discord-heading">Yes, I will prove myself</span>
+                                        <span class="text-xs text-discord-muted">I am fully committed to meeting all expectations during the trial.</span>
+                                    </div>
+                                </label>
+                                <label class="flex items-center gap-4 p-4 bg-discord-input rounded-xl border border-white/5 cursor-pointer hover:border-discord-blurple/50 transition">
+                                    <input type="radio" name="q_trial" value="I will try" class="w-5 h-5 text-discord-blurple focus:ring-0 accent-discord-blurple">
+                                    <div>
+                                        <span class="block text-base font-semibold text-discord-heading">I will try</span>
+                                        <span class="text-xs text-discord-muted">I will attempt to do my best depending on real-life schedule.</span>
+                                    </div>
+                                </label>
+                                <label class="flex items-center gap-4 p-4 bg-discord-input rounded-xl border border-white/5 cursor-pointer hover:border-discord-blurple/50 transition">
+                                    <input type="radio" name="q_trial" value="No i Cant" class="w-5 h-5 text-discord-blurple focus:ring-0 accent-discord-blurple">
+                                    <div>
+                                        <span class="block text-base font-semibold text-discord-heading">No, I can't</span>
+                                        <span class="text-xs text-discord-muted">I cannot commit to a 2-week trial period at this time.</span>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Final Review Notice -->
+                        <div class="p-4 bg-discord-blurple/10 rounded-xl border border-discord-blurple/20 text-xs text-discord-muted flex items-center gap-3">
+                            <i class="fa-solid fa-circle-info text-discord-blurple text-lg"></i>
+                            <span>Reviewing your answers? Click <strong>Edit Answers</strong> to jump back to Page 1 while keeping all your entered data.</span>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Warning Alert Box -->
+                <div id="errorAlert" class="hidden mt-4 p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-xs text-red-400 flex items-center gap-2">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    <span id="errorAlertText">Please fill in all required fields before proceeding.</span>
+                </div>
+
+                <!-- Footer Navigation Bar -->
+                <div class="mt-8 pt-4 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4">
+                    
+                    <!-- Bottom Left: Page Counter & Attribution -->
+                    <div class="flex items-center justify-between sm:justify-start w-full sm:w-auto gap-4">
+                        <span id="pageCounter" class="text-xs font-bold text-discord-heading bg-discord-innerCard px-3 py-1.5 rounded-lg border border-white/5">
+                            Page 1/11
+                        </span>
+                        <span class="text-xs text-discord-muted font-medium flex items-center gap-1.5">
+                            <i class="fa-solid fa-code text-discord-blurple"></i> Made by <span class="font-bold text-discord-heading">! Leader</span>
+                        </span>
+                    </div>
+
+                    <!-- Bottom Navigation & Action Buttons -->
+                    <div id="standardNav" class="flex items-center gap-3 w-full sm:w-auto justify-end">
+                        <button type="button" id="btnPrev" onclick="navigatePage(-1)" class="hidden w-1/2 sm:w-auto px-5 py-2.5 rounded-xl bg-discord-innerCard text-discord-heading font-semibold text-sm hover:bg-white/10 transition border border-white/5 flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-arrow-left text-xs"></i> Back
+                        </button>
+                        <button type="button" id="btnNext" onclick="navigatePage(1)" class="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-discord-blurple text-white font-semibold text-sm hover:bg-discord-blurpleHover transition shadow-lg shadow-discord-blurple/20 flex items-center justify-center gap-2">
+                            Next <i class="fa-solid fa-arrow-right text-xs"></i>
+                        </button>
+                    </div>
+
+                    <!-- Page 11 Special Action Center Buttons -->
+                    <div id="finalSubmitNav" class="hidden flex items-center justify-center gap-4 w-full sm:w-auto">
+                        <button type="button" onclick="editApplication()" class="px-5 py-2.5 rounded-xl bg-discord-innerCard text-discord-heading font-semibold text-sm hover:bg-white/10 transition border border-white/5 flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-pen-to-square text-xs"></i> Edit
+                        </button>
+                        <button type="button" id="btnSubmit" onclick="submitApplication()" class="px-8 py-2.5 rounded-xl bg-discord-green text-white font-bold text-sm hover:bg-discord-greenHover transition shadow-lg shadow-discord-green/20 flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-paper-plane text-xs"></i> Submit Application
+                        </button>
+                    </div>
+
+                </div>
+
+            </form>
+        </div>
+    </main>
+
+    <!-- Submission Modal / Toast Overlay -->
+    <div id="statusModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="bg-discord-card border border-white/10 rounded-2xl p-8 max-w-md w-full text-center space-y-4 discord-card-shadow transform scale-95 transition-transform duration-300" id="statusModalCard">
+            <div id="modalIconContainer" class="w-16 h-16 rounded-full bg-discord-blurple/20 text-discord-blurple flex items-center justify-center mx-auto text-3xl">
+                <i id="modalIcon" class="fa-solid fa-spinner animate-spin"></i>
+            </div>
+            <h3 id="modalTitle" class="text-xl font-extrabold text-discord-heading">Sending Application...</h3>
+            <p id="modalMessage" class="text-sm text-discord-muted">Please wait while we submit your application to the PaleOak Staff team discord channel.</p>
+            <div id="modalAction" class="pt-2 hidden">
+                <button onclick="closeModal()" class="w-full py-2.5 bg-discord-blurple hover:bg-discord-blurpleHover text-white font-bold text-sm rounded-xl transition">
+                    Close Window
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Application Script Logic -->
+    <script>
+        const TOTAL_PAGES = 11;
+        let currentPage = 1;
+        const WEBHOOK_URL = "https://discord.com/api/webhooks/1568469715381391451/q14IA2kJzCfIRwcoHLCr-x87OBh_3cT7CtdwRWQNtoyfushv__VGHSdez9Nvyv0UsDKm";
+
+        // Navigation Controller
+        function navigatePage(direction) {
+            hideError();
+            if (direction === 1) {
+                if (!validateCurrentPage()) {
+                    return;
+                }
+            }
+
+            const targetPage = currentPage + direction;
+            if (targetPage >= 1 && targetPage <= TOTAL_PAGES) {
+                currentPage = targetPage;
+                updatePageUI();
+            }
+        }
+
+        // Jump back to page 1 while preserving input values
+        function editApplication() {
+            hideError();
+            currentPage = 1;
+            updatePageUI();
+        }
+
+        // Update active page visibility and buttons
+        function updatePageUI() {
+            // Hide all pages
+            document.querySelectorAll('.page-step').forEach(page => {
+                page.classList.add('hidden');
+            });
+
+            // Show current page
+            const activePage = document.querySelector(`.page-step[data-page="${currentPage}"]`);
+            if (activePage) {
+                activePage.classList.remove('hidden');
+            }
+
+            // Update Page Counter display
+            document.getElementById('pageCounter').innerText = `Page ${currentPage}/${TOTAL_PAGES}`;
+
+            // Update Progress Bar
+            const progressPercent = (currentPage / TOTAL_PAGES) * 100;
+            document.getElementById('progressBar').style.width = `${progressPercent}%`;
+
+            // Navigation Button State Management
+            const btnPrev = document.getElementById('btnPrev');
+            const standardNav = document.getElementById('standardNav');
+            const finalSubmitNav = document.getElementById('finalSubmitNav');
+
+            if (currentPage === 1) {
+                btnPrev.classList.add('hidden');
+            } else {
+                btnPrev.classList.remove('hidden');
+            }
+
+            if (currentPage === TOTAL_PAGES) {
+                standardNav.classList.add('hidden');
+                finalSubmitNav.classList.remove('hidden');
+                finalSubmitNav.classList.add('flex');
+            } else {
+                standardNav.classList.remove('hidden');
+                finalSubmitNav.classList.add('hidden');
+                finalSubmitNav.classList.remove('flex');
+            }
+
+            // Smooth scroll to top of card on step change
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Validation for each page before proceeding
+        function validateCurrentPage() {
+            switch(currentPage) {
+                case 1:
+                    const disc = document.getElementById('q_disc_age_tz').value.trim();
+                    const email = document.getElementById('q_email').value.trim();
+                    if (!disc) {
+                        showError("Please provide your Discord username, age, and timezone.");
+                        return false;
+                    }
+                    if (!email || !validateEmail(email)) {
+                        showError("Please enter a valid email address.");
+                        return false;
+                    }
+                    return true;
+                
+                case 2:
+                    const micRadio = document.querySelector('input[name="q_mic"]:checked');
+                    if (!micRadio) {
+                        showError("Please select one of the microphone & recording options.");
+                        return false;
+                    }
+                    return true;
+
+                case 3:
+                    const hours = document.getElementById('q_hours').value.trim();
+                    if (!hours) {
+                        showError("Please state how many hours you can commit per week.");
+                        return false;
+                    }
+                    return true;
+
+                case 4:
+                    const motivation = document.getElementById('q_motivation').value.trim();
+                    if (!motivation || motivation.length < 15) {
+                        showError("Please provide a detailed answer for why you want to join our staff team.");
+                        return false;
+                    }
+                    return true;
+
+                case 5:
+                    const experience = document.getElementById('q_experience').value.trim();
+                    if (!experience || experience.length < 15) {
+                        showError("Please share your past staff experience or readiness details.");
+                        return false;
+                    }
+                    return true;
+
+                case 6:
+                    const sc1 = document.getElementById('q_scenario1').value.trim();
+                    if (!sc1 || sc1.length < 15) {
+                        showError("Please complete your response for Scenario 1.");
+                        return false;
+                    }
+                    return true;
+
+                case 7:
+                    const sc2 = document.getElementById('q_scenario2').value.trim();
+                    if (!sc2 || sc2.length < 15) {
+                        showError("Please complete your response for Scenario 2.");
+                        return false;
+                    }
+                    return true;
+
+                case 8:
+                    const sc3 = document.getElementById('q_scenario3').value.trim();
+                    if (!sc3 || sc3.length < 15) {
+                        showError("Please complete your response for Scenario 3.");
+                        return false;
+                    }
+                    return true;
+
+                case 9:
+                    const sc4 = document.getElementById('q_scenario4').value.trim();
+                    if (!sc4 || sc4.length < 15) {
+                        showError("Please complete your response for Scenario 4.");
+                        return false;
+                    }
+                    return true;
+
+                case 10:
+                    const sc5 = document.getElementById('q_scenario5').value.trim();
+                    if (!sc5 || sc5.length < 15) {
+                        showError("Please complete your response for Scenario 5.");
+                        return false;
+                    }
+                    return true;
+
+                case 11:
+                    const trialRadio = document.querySelector('input[name="q_trial"]:checked');
+                    if (!trialRadio) {
+                        showError("Please select an option regarding the 2-week trial period.");
+                        return false;
+                    }
+                    return true;
+
+                default:
+                    return true;
+            }
+        }
+
+        // Email syntax helper
+        function validateEmail(email) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        }
+
+        // Error message handling
+        function showError(msg) {
+            const errorBox = document.getElementById('errorAlert');
+            const errorText = document.getElementById('errorAlertText');
+            errorText.innerText = msg;
+            errorBox.classList.remove('hidden');
+        }
+
+        function hideError() {
+            const errorBox = document.getElementById('errorAlert');
+            errorBox.classList.add('hidden');
+        }
+
+        // Submit Webhook Payload Generator
+        async function submitApplication() {
+            if (!validateCurrentPage()) return;
+
+            // Collect all inputs
+            const discAgeTz = document.getElementById('q_disc_age_tz').value.trim();
+            const email = document.getElementById('q_email').value.trim();
+            const mic = document.querySelector('input[name="q_mic"]:checked')?.value || "N/A";
+            const hours = document.getElementById('q_hours').value.trim();
+            const motivation = document.getElementById('q_motivation').value.trim();
+            const experience = document.getElementById('q_experience').value.trim();
+            const scenario1 = document.getElementById('q_scenario1').value.trim();
+            const scenario2 = document.getElementById('q_scenario2').value.trim();
+            const scenario3 = document.getElementById('q_scenario3').value.trim();
+            const scenario4 = document.getElementById('q_scenario4').value.trim();
+            const scenario5 = document.getElementById('q_scenario5').value.trim();
+            const trial = document.querySelector('input[name="q_trial"]:checked')?.value || "N/A";
+
+            // Open Modal in Loading State
+            showModal('loading', 'Submitting Application...', 'Sending details to PaleOak\'s Hometown discord server...');
+
+            // Construct Discord Rich Embed Object
+            const payload = {
+                username: "PaleOak Staff Bot",
+                avatar_url: "https://cdn.discordapp.com/embed/avatars/0.png",
+                embeds: [
+                    {
+                        title: "📝 New Staff Application Submitted!",
+                        description: `**Server:** PaleOak's Hometown\n**Applicant Info:** \`${discAgeTz}\``,
+                        color: 5793266, // Discord Blurple color code
+                        fields: [
+                            {
+                                name: "📧 Email",
+                                value: email,
+                                inline: true
+                            },
+                            {
+                                name: "🎙️ Mic & Recording Capability",
+                                value: mic,
+                                inline: true
+                            },
+                            {
+                                name: "⏱️ Weekly Hours Commitment",
+                                value: hours,
+                                inline: true
+                            },
+                            {
+                                name: "❤️ Motivation for Joining",
+                                value: truncateText(motivation, 1024)
+                            },
+                            {
+                                name: "💼 Past Staff Experience / Readiness",
+                                value: truncateText(experience, 1024)
+                            },
+                            {
+                                name: "🚨 Scenario 1: Minor Rule Breach",
+                                value: truncateText(scenario1, 1024)
+                            },
+                            {
+                                name: "🗣️ Scenario 2: Aggressive Member in Public",
+                                value: truncateText(scenario2, 1024)
+                            },
+                            {
+                                name: "⚡ Scenario 3: Raid/Spam (No Bot Commands)",
+                                value: truncateText(scenario3, 1024)
+                            },
+                            {
+                                name: "⚖️ Scenario 4: High-Profile Member Drama",
+                                value: truncateText(scenario4, 1024)
+                            },
+                            {
+                                name: "🛡️ Scenario 5: Accidental Ban & Backlash",
+                                value: truncateText(scenario5, 1024)
+                            },
+                            {
+                                name: "🤝 2-Week Trial Period Agreement",
+                                value: `**Choice:** ${trial}`
+                            }
+                        ],
+                        footer: {
+                            text: "PaleOak's Hometown Staff Recruitment System • Made by ! Leader",
+                            icon_url: "https://cdn.discordapp.com/embed/avatars/1.png"
+                        },
+                        timestamp: new Date().toISOString()
+                    }
+                ]
+            };
+
+            try {
+                const response = await fetch(WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                if (response.ok || response.status === 204) {
+                    showModal('success', 'Application Submitted Successfully!', 'Thank you for applying for staff at PaleOak\'s Hometown! Our leadership team will review your answers and reach out to your Discord username soon.');
+                    // Reset form optional or disable submit button
+                    document.getElementById('btnSubmit').disabled = true;
+                    document.getElementById('btnSubmit').classList.add('opacity-50', 'cursor-not-allowed');
+                } else {
+                    const errData = await response.text();
+                    console.error("Webhook submission error:", errData);
+                    showModal('error', 'Submission Failed', 'Failed to send your application due to a server error. Please verify your connection or try again.');
+                }
+            } catch (err) {
+                console.error("Fetch Exception:", err);
+                showModal('error', 'Network Error', 'Could not establish connection to Discord webhook endpoint. Please check your internet connection.');
+            }
+        }
+
+        // Helper to trim text lengths safely for Discord embeds (max 1024 chars per field)
+        function truncateText(str, maxLen) {
+            if (!str) return "N/A";
+            return str.length > maxLen ? str.substring(0, maxLen - 3) + "..." : str;
+        }
+
+        // Modal Display Controller
+        function showModal(type, title, message) {
+            const modal = document.getElementById('statusModal');
+            const modalCard = document.getElementById('statusModalCard');
+            const modalIconContainer = document.getElementById('modalIconContainer');
+            const modalIcon = document.getElementById('modalIcon');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalMessage = document.getElementById('modalMessage');
+            const modalAction = document.getElementById('modalAction');
+
+            modalTitle.innerText = title;
+            modalMessage.innerText = message;
+
+            if (type === 'loading') {
+                modalIconContainer.className = "w-16 h-16 rounded-full bg-discord-blurple/20 text-discord-blurple flex items-center justify-center mx-auto text-3xl";
+                modalIcon.className = "fa-solid fa-spinner animate-spin";
+                modalAction.classList.add('hidden');
+            } else if (type === 'success') {
+                modalIconContainer.className = "w-16 h-16 rounded-full bg-discord-green/20 text-discord-green flex items-center justify-center mx-auto text-3xl";
+                modalIcon.className = "fa-solid fa-circle-check";
+                modalAction.classList.remove('hidden');
+            } else if (type === 'error') {
+                modalIconContainer.className = "w-16 h-16 rounded-full bg-red-500/20 text-red-400 flex items-center justify-center mx-auto text-3xl";
+                modalIcon.className = "fa-solid fa-circle-xmark";
+                modalAction.classList.remove('hidden');
+            }
+
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            modalCard.classList.remove('scale-95');
+            modalCard.classList.add('scale-100');
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('statusModal');
+            const modalCard = document.getElementById('statusModalCard');
+            modal.classList.add('opacity-0', 'pointer-events-none');
+            modalCard.classList.remove('scale-100');
+            modalCard.classList.add('scale-95');
+        }
+    </script>
+</body>
+</html>
